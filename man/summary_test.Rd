@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary_test.R
 \name{TraitScan.summary.level}
 \alias{TraitScan.summary.level}
-\title{Monte Carlo Simulation}
+\title{TraitScan Test Using Summary-level GWAS Data}
 \usage{
 TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
 }
@@ -26,7 +26,7 @@ A list with the selected subset of traits
 \item{p.value}{The empirical p-value of combined test from Monte Carlo}
 }
 \description{
-Monte Carlo Simulation for the null distributions of TC and combined tests
+Run HC and TC tests on summary-level GWAS data and combine tests by minp strategy.
 }
 \examples{
 
@@ -44,5 +44,5 @@ diag(null_cov) = 1
 example <- TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
 }
 \author{
-Rui Cao
+Rui Cao, Tianzhong Yang
 }

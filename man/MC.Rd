@@ -34,5 +34,5 @@ nsim = 1e4
 null_dist <- TraitScan.MC(nsim = nsim, p = p, alpha_grid = alpha_grid)
 }
 \author{
-Rui Cao
+Rui Cao, Tianzhong Yang
 }

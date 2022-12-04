@@ -1,6 +1,6 @@
-#' Monte Carlo Simulation
+#' TraitScan Test Using Summary-level GWAS Data
 #'
-#' Monte Carlo Simulation for the null distributions of TC and combined tests
+#' Run HC and TC tests on summary-level GWAS data and combine tests by minp strategy.
 #'
 #' @param beta_hat a numeric vector, estimated regression coefficients of traits.
 #' @param se_hat a numeric vector, estimated standard errors of beta_hat.
@@ -14,7 +14,7 @@
 #' \item{select.traits.TC}{The selected traits by TC.}
 #' \item{tests.minp}{Which test has a smaller p value, either HC or TC.}
 #' \item{p.value}{The empirical p-value of combined test from Monte Carlo}
-#' @author Rui Cao
+#' @author Rui Cao, Tianzhong Yang
 #' @examples
 #'
 #' set.seed(1)

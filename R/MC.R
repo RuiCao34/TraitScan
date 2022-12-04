@@ -8,7 +8,7 @@
 #'
 #' @return A list with the null distributions of TC priority function, TC statistic, and combimed test statistic
 #' @note Use this function to simulate the null distributions before run tests \code{TraitScan.summary.level} or \code{TraitScan.individual.level}
-#' @author Rui Cao
+#' @author Rui Cao, Tianzhong Yang
 #' @examples
 #'
 #' p = 10
