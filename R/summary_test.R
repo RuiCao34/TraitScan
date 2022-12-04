@@ -18,9 +18,9 @@
 #' @examples
 #'
 #' set.seed(1)
-#' p = 10
-#' alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=p*2)))
-#' nsim = 1e4
+#' p = 10    # number of traits
+#' alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=p*2)))    # alpha grid in HC statistic
+#' nsim = 1e4    # number of MC iterations
 #' null_dist <- TraitScan.MC(nsim = nsim, p = p, alpha_grid = alpha_grid)
 #'
 #' beta_hat = c(rnorm(8,0,0.1), 0.3, 0.3)
