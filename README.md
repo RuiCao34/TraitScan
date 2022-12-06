@@ -1,6 +1,6 @@
 # TraitScan
 A trait subset method for multi-trait GWAS
-TraitScan is a powerful trait subset scan algorithm for mult-trait GWAS. It can also test the association significance between multiple traits and a single genetic variant (SNP). By taking the trait correlations into account, TraitScan is more powerful than PheWAS under scenarios with sparse and moderate true signals. TraitScan also has linear computational time over the number of traits and thus can handle over 1,000 traits. To run the TraitScan algorithm, first a Monte Carlo simulation is required using *TraitScan.MC*. With the summary-level GWAS data available, *TraitScan.summary.level* can run the test and identify a subset of traits most likely associated with the SNP.
+TraitScan is a powerful trait subset scan algorithm for mult-trait GWAS. It can also test the association significance between multiple traits and a single genetic variant (SNP). By taking the trait correlations into account, TraitScan is more powerful than PheWAS under scenarios with sparse and moderate true signals. TraitScan also has linear computational time over the number of traits and thus can handle over 1,000 traits. To run the TraitScan algorithm, first a Monte Carlo simulation is required using *TraitScan.MC*. With the summary-level GWAS data available, *TraitScan.summary.level* can run the test and identify a subset of traits most likely associated with the SNP.<br />
 The paper draft of TraitScan is under prepration.
 
 # Required Packages
