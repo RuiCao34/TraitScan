@@ -10,7 +10,7 @@ R $\ge$ 4.1.0, "whitening" $\ge$ 1.3.0
 # Installation
 devtools::install_github("RuiCao34/TraitScan")
 
-# Example for summary level data
+# Example for GWAS summary level data
 set.seed(1) <br />
 p = 10    # number of traits <br />
 alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=p*2)))    # alpha grid in HC statistic <br />
