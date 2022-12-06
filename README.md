@@ -5,7 +5,7 @@ The paper draft of TraitScan is under prepration.
 
 # Required Packages
 
-R >= 4.1.0, "whitening" >= 1.3.0
+R $\ge$ 4.1.0, "whitening" $\ge$ 1.3.0
 
 # Installation
 devtools::install_github("RuiCao34/TraitScan")
