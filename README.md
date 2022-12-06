@@ -21,4 +21,4 @@ beta_hat = c(rnorm(8,0,0.1), 0.3, 0.3) <br />
 se_hat = rep(0.1, p) <br />
 null_cov = matrix(0.2, nrow = p, ncol = p) <br />
 diag(null_cov) = 1 <br />
- 
+example <- TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
