@@ -4,7 +4,14 @@
 \alias{TraitScan.summary.level}
 \title{TraitScan Test Using Summary-level GWAS Data}
 \usage{
-TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
+TraitScan.summary.level(
+  beta_hat,
+  se_hat,
+  null_cov,
+  alpha_grid,
+  null_dist,
+  tol = 0.01
+)
 }
 \arguments{
 \item{beta_hat}{a numeric vector, estimated regression coefficients of traits.}
@@ -16,9 +23,12 @@ TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
 \item{alpha_grid}{the alpha grid for p value thresholds. Should be the same as \code{alpha_grid} when calling \code{TraitScan.MC}}
 
 \item{null_dist}{the output of function \code{TraitScan.MC}.}
+
+\item{tol}{When \code{null_cov} is rank-deficient, it is recommended that the eigenvalues smaller than \code{tol} are filtered out. Additional sensitivity analysis may also be carried on \code{null_cov} to ensure the output is replicable.}
 }
 \value{
 A list with the selected subset of traits
+\item{trait.pval.decor}{The decorrelated GWAS p-values for each trait.}
 \item{select.traits.minp}{The selected traits by minp strategy of HC and TC. The value represented the order of selected traits in \code{beta_hat}.}
 \item{select.traits.HC}{The selected traits by HC.}
 \item{select.traits.TC}{The selected traits by TC.}
@@ -42,6 +52,9 @@ null_cov = matrix(0.2, nrow = p, ncol = p)
 diag(null_cov) = 1
 
 example <- TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
+}
+\references{
+Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." medRxiv (2023): 2023-07.
 }
 \author{
 Rui Cao, Tianzhong Yang

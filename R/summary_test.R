@@ -7,8 +7,10 @@
 #' @param null_cov a \code{p} by \code{p} positive definite matrix, the covariance matrix of z scores under the null. Can be estimated from null SNPs or LD score regression.
 #' @param alpha_grid the alpha grid for p value thresholds. Should be the same as \code{alpha_grid} when calling \code{TraitScan.MC}
 #' @param null_dist the output of function \code{TraitScan.MC}.
+#' @param tol When \code{null_cov} is rank-deficient, it is recommended that the eigenvalues smaller than \code{tol} are filtered out. Additional sensitivity analysis may also be carried on \code{null_cov} to ensure the output is replicable.
 #'
 #' @return A list with the selected subset of traits
+#' \item{trait.pval.decor}{The decorrelated GWAS p-values for each trait.}
 #' \item{select.traits.minp}{The selected traits by minp strategy of HC and TC. The value represented the order of selected traits in \code{beta_hat}.}
 #' \item{select.traits.HC}{The selected traits by HC.}
 #' \item{select.traits.TC}{The selected traits by TC.}
@@ -29,19 +31,40 @@
 #' diag(null_cov) = 1
 #'
 #' example <- TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
+#' @references
+#' Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." medRxiv (2023): 2023-07.
 #' @rdname summary_test
 #' @export
 #'
 
-TraitScan.summary.level <- function(beta_hat, se_hat, null_cov, alpha_grid, null_dist){
-  interest.data <- list("summary" = cbind(beta_hat, se_hat, beta_hat/se_hat))
-  test.output <- combined.test(interest.data, null_cov, null_dist$null_dist_TC_prior, alpha_grid, null_dist$null_dist_TC_stat)
+TraitScan.summary.level <- function(beta_hat, se_hat, null_cov, alpha_grid, null_dist, tol = 1e-2){
+
+  rank_null_cov = Matrix::rankMatrix(null_cov)
+  if(rank_null_cov < nrow(null_cov)){
+    warning("The covariance matrix is not full-rank. Filtering small eigenvalues...")
+    P = cov2cor(null_cov)
+    V = diag(null_cov)
+    temp = eigen(P)
+    temp$values[temp$values < tol] = 0
+    inverse_square = 1/sqrt(temp$values)
+    inverse_square[inverse_square == Inf] = 0
+    w = temp$vectors %*% diag(inverse_square) %*% solve(temp$vectors) %*% sqrt(diag(1/V))
+  }else{
+    w <- whitening::whiteningMatrix(null_cov, method='ZCA-cor')
+  }
+  z.decor <- beta_hat/se_hat %*% t(w)
+  pval.de <- (1-pnorm(abs(z.decor)))*2
+
+  interest.data <- list("summary" = cbind(z.decor, z.decor, z.decor))
+  test.output <- combined.test(interest.data, diag(1,length(z.decor)), null_dist$null_dist_TC_prior, alpha_grid, null_dist$null_dist_TC_stat)
   p.value <- sum(null_dist$null_dist_combined_test <= test.output$test.statistics) / length(null_dist$null_dist_combined_test)
   if(p.value == 0) p.value <- paste0("<", 1/length(null_dist$null_dist_combined_test))
-  return( list(select.traits.minp = test.output$select,
+  return( list(trait.pval.decor = pval.de,
+               select.traits.minp = test.output$select,
                select.traits.HC = test.output$select.HC,
                select.traits.TC = test.output$select.TC,
                tests.minp = test.output$minp.test,
-               p.value = p.value) )
+               p.value = p.value
+               ) )
 
 }

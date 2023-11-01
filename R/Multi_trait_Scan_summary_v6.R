@@ -240,13 +240,14 @@ pleio.data.sim <- function(n,beta_cont, beta_bin,maf,variance,threshold){
   p_cont <- length(beta_cont)
   p_bin <- length(beta_bin)
   p <- p_cont + p_bin
-  if(length(p_cont)==0){
-    beta <- sample(beta_bin, length(beta_bin), replace=F)
-  }else if(length(p_bin)==0){
-    beta <- sample(beta_cont, length(beta_cont), replace=F)
-  }else{
-    beta <- c(sample(beta_cont, length(beta_cont), replace=F), sample(beta_bin, length(beta_bin), replace=F))
-  }
+  # if(length(p_cont)==0){
+  #   beta <- sample(beta_bin, length(beta_bin), replace=F)
+  # }else if(length(p_bin)==0){
+  #   beta <- sample(beta_cont, length(beta_cont), replace=F)
+  # }else{
+  #   beta <- c(sample(beta_cont, length(beta_cont), replace=F), sample(beta_bin, length(beta_bin), replace=F))
+  # }
+  beta <- c(beta_cont, beta_bin)
   
   truebeta=!(beta==0)
   # Simulate dosage of minor allele
@@ -256,10 +257,9 @@ pleio.data.sim <- function(n,beta_cont, beta_bin,maf,variance,threshold){
   Sigma <- variance
   
   # Simulate traits for each individual
-  epsilon <- matrix(NA, nrow=n, ncol=p) # n by p
+  epsilon <- MASS::mvrnorm(n, rep(0,p), Sigma) # n by p
   y <- matrix(NA, nrow=n, ncol=p) # n by p
   for (i in 1:n){
-    epsilon[i,] <- MASS::mvrnorm(1, rep(0,p), Sigma)
     y[i,] <- x[i]*beta + epsilon[i,]
     if(p_bin>0){
       y[i,(p-p_bin+1):p] <- ifelse(y[i,(p-p_bin+1):p]>threshold,1,0)
@@ -708,55 +708,62 @@ null.stat.theoretical <- function(n.p.values, alpha_grid, test.statistic){
   threshold = ceiling(threshold) - 1
   threshold[threshold > n.p.values] = n.p.values
   conditional.prob = vector("list", length = m)
-  temp = lapply(0:threshold[m], function(x){choose(n.p.values,x) * (alpha_grid[m])^(x) * (1-alpha_grid[m])^(n.p.values-x)})
+  # temp = lapply(0:threshold[m], function(x){choose(n.p.values,x) * (alpha_grid[m])^(x) * (1-alpha_grid[m])^(n.p.values-x)})
+  temp = lapply(0:threshold[m], function(x){dbinom(x,n.p.values,alpha_grid[m])})
   conditional.prob[[m]] = unlist(temp)
   for(i in (m-1):1){
     temp.matrix = matrix(0, nrow=1+threshold[i], ncol=length(conditional.prob[[i+1]]))
     ## column: (value of m-1)-1; row: given (value in m)-1
     for(j in 1:ncol(temp.matrix)){
-      temp = lapply(0:min(threshold[i],j-1), function(x){choose(j-1,x) * (alpha_grid[i]/alpha_grid[i+1])^(x) * (1-alpha_grid[i]/alpha_grid[i+1])^(j-1-x)})
+      # temp = lapply(0:min(threshold[i],j-1), function(x){choose(j-1,x) * (alpha_grid[i]/alpha_grid[i+1])^(x) * (1-alpha_grid[i]/alpha_grid[i+1])^(j-1-x)})
+      temp = lapply(0:min(threshold[i],j-1), function(x){dbinom(x,j-1,alpha_grid[i]/alpha_grid[i+1])})
       temp.matrix[1:min(threshold[i]+1,j),j] = unlist(temp) * conditional.prob[[i+1]][j]
     }
     
     ## joint prob/marginal prob
-    conditional.prob[[i]] = as.vector(rowSums(temp.matrix))/sum(conditional.prob[[i+1]])
-  }
-  return(1 - prod(unlist(lapply(conditional.prob, sum))))
-}
-
-
-null.stat.alphainf.theoretical <- function(n.p.values, test.statistic, min.alpha, max.alpha){
-  m = n.p.values
-  alpha_grid = (1:n.p.values) / ((1:n.p.values) + test.statistic^2)
-  threshold = (1:m)-1
-  # threshold[alpha_grid < min.alpha] = threshold[min(which(alpha_grid >= min.alpha))]
-  # threshold[alpha_grid > max.alpha] = threshold[max(which(alpha_grid <= max.alpha))]
-  # alpha_grid[alpha_grid < min.alpha] = min.alpha
-  # alpha_grid[alpha_grid > max.alpha] = max.alpha
-  
-  threshold <- threshold[alpha_grid > min.alpha & alpha_grid < max.alpha]
-  alpha_grid <- alpha_grid[alpha_grid > min.alpha & alpha_grid < max.alpha]
-  m = length(threshold)
-  
-  
-  conditional.prob = vector("list", length = m)
-  temp = lapply(0:threshold[m], function(x){choose(n.p.values,x) * (alpha_grid[m])^(x) * (1-alpha_grid[m])^(n.p.values-x)})
-  conditional.prob[[m]] = unlist(temp)
-  if(m > 1){
-    for(i in (m-1):1){
-      temp.matrix = matrix(0, nrow=1+threshold[i], ncol=length(conditional.prob[[i+1]]))
-      ## column: (value of m-1)-1; row: given (value in m)-1
-      for(j in 1:ncol(temp.matrix)){
-        temp = lapply(0:min(threshold[i],j-1), function(x){choose(j-1,x) * (alpha_grid[i]/alpha_grid[i+1])^(x) * (1-alpha_grid[i]/alpha_grid[i+1])^(j-1-x)})
-        temp.matrix[1:min(threshold[i]+1,j),j] = unlist(temp) * conditional.prob[[i+1]][j]
-      }
-      
-      ## joint prob/marginal prob
+    if(sum(conditional.prob[[i+1]]) ==0 ){
+      conditional.prob[1:i] = 0
+      break
+    }else{
       conditional.prob[[i]] = as.vector(rowSums(temp.matrix))/sum(conditional.prob[[i+1]])
     }
   }
   return(1 - prod(unlist(lapply(conditional.prob, sum))))
 }
+
+
+# null.stat.alphainf.theoretical <- function(n.p.values, test.statistic, min.alpha, max.alpha){
+#   m = n.p.values
+#   alpha_grid = (1:n.p.values) / ((1:n.p.values) + test.statistic^2)
+#   threshold = (1:m)-1
+#   # threshold[alpha_grid < min.alpha] = threshold[min(which(alpha_grid >= min.alpha))]
+#   # threshold[alpha_grid > max.alpha] = threshold[max(which(alpha_grid <= max.alpha))]
+#   # alpha_grid[alpha_grid < min.alpha] = min.alpha
+#   # alpha_grid[alpha_grid > max.alpha] = max.alpha
+#   
+#   threshold <- threshold[alpha_grid > min.alpha & alpha_grid < max.alpha]
+#   alpha_grid <- alpha_grid[alpha_grid > min.alpha & alpha_grid < max.alpha]
+#   m = length(threshold)
+#   
+#   
+#   conditional.prob = vector("list", length = m)
+#   temp = lapply(0:threshold[m], function(x){choose(n.p.values,x) * (alpha_grid[m])^(x) * (1-alpha_grid[m])^(n.p.values-x)})
+#   conditional.prob[[m]] = unlist(temp)
+#   if(m > 1){
+#     for(i in (m-1):1){
+#       temp.matrix = matrix(0, nrow=1+threshold[i], ncol=length(conditional.prob[[i+1]]))
+#       ## column: (value of m-1)-1; row: given (value in m)-1
+#       for(j in 1:ncol(temp.matrix)){
+#         temp = lapply(0:min(threshold[i],j-1), function(x){choose(j-1,x) * (alpha_grid[i]/alpha_grid[i+1])^(x) * (1-alpha_grid[i]/alpha_grid[i+1])^(j-1-x)})
+#         temp.matrix[1:min(threshold[i]+1,j),j] = unlist(temp) * conditional.prob[[i+1]][j]
+#       }
+#       
+#       ## joint prob/marginal prob
+#       conditional.prob[[i]] = as.vector(rowSums(temp.matrix))/sum(conditional.prob[[i+1]])
+#     }
+#   }
+#   return(1 - prod(unlist(lapply(conditional.prob, sum))))
+# }
 
 
 
@@ -1114,6 +1121,87 @@ null.dist.Monte.Carlo <- function(N, p, alpha_grid,para=F){
   
   null_dist_combined_test = pmin(null_dist_TC_pval, null_dist_HC_pval)
 
+  return(list("null_dist_TC_prior"=null_dist_TC_prior, 
+              "null_dist_TC_stat"=null_dist_TC_stat, 
+              "null_dist_combined_test"=null_dist_combined_test))
+}
+
+t2cor <- function (t, n, min.n = max(n, 30)/10) 
+{
+  # stopifnot(length(n) == 1 || length(n) == length(p))
+  # stopifnot(length(p) == length(sign))
+  # t <- sign(sign) * qt(p/2, df = n - 2, lower.tail = F)
+  invalid <- n < min.n
+  if (any(invalid)) {
+    warning(paste(sum(invalid), "statistics has n < ", 
+                  min.n, "and are coded as NA."))
+  }
+  t[invalid] <- NA
+  return(t/sqrt(n - 2 + t^2))
+}
+
+null.mixed.mc <- function(n,p_cont, p_bin,maf,variance,threshold,q,mc.cores){
+  p <- p_cont + p_bin
+  summary_data <- array(dim=c(q,p,5))
+  maf_all <- rep(maf,q)
+
+  Zscore.null <- parallel::mclapply(1:q, function(q_temp){
+    pleio.data.sim(n,beta_cont=rep(0,p_cont),beta_bin=rep(0,p_bin),maf,variance,threshold)$summary[,3]
+  }, mc.cores = mc.cores)
+  Zscore.null <- do.call("rbind",Zscore.null)
+
+  return(cor(Zscore.null))
+}
+
+null.dist.Monte.Carlo.mc <- function(N, p, alpha_grid,para=F, mc.cores = NULL){
+  gamma_grid = lapply(alpha_grid, function(x){
+    abs(qnorm(x/2, 0, 1))
+  })
+  gamma_grid = unlist(gamma_grid)
+  z.matrix <- matrix(rnorm(p*N,0,1), nrow=N)
+  
+  
+
+  null_dist_TC_prior <- vector("list", length = length(alpha_grid))
+  vector_G = rep(0, N)
+    
+  # TC priority function
+  null_dist_TC_prior <- parallel::mclapply(1:length(alpha_grid),function(j){
+    for(i in 1:N){
+      obj <- truncated.G(z.matrix[i,], gamma=gamma_grid[j], power=2)
+      vector_G[i] <- obj$test.statistics
+    }
+    return(vector_G)
+  },mc.cores=mc.cores)
+    
+    
+  # TC min p
+  null_dist_TC_stat <- null_dist_TC_pval <- rep(0, N)
+  null_dist_TC_stat <- parallel::mclapply(1:N,function(i){
+    obj <- truncated.power.test(interest=list(summary=cbind(z.matrix[i,],z.matrix[i,],z.matrix[i,])), 
+                                null.cov = diag(rep(1,p)), 
+                                cutoff = gamma_grid, 
+                                null_dist_TC_prior, 
+                                gamma = 2)
+    return(obj$test.statistics)
+  },mc.cores=mc.cores)
+  null_dist_TC_stat = unlist(null_dist_TC_stat)
+  null_dist_TC_pval = rank(null_dist_TC_stat)/N
+
+  
+  # HC
+  null_dist_HC_pval = rep(0, N)
+  null_dist_HC_pval <- parallel::mclapply(1:N,function(i){
+    obj <- fgss.pleio.binary(list(summary=cbind(z.matrix[i,],z.matrix[i,],z.matrix[i,])), 
+                             null.cov = diag(rep(1,p)), alpha_grid=alpha_grid, test='HC')
+    return(null.stat.theoretical(p, alpha_grid, obj$statistic))
+  },mc.cores=mc.cores)
+  null_dist_HC_pval = unlist(null_dist_HC_pval)
+  
+  
+
+  null_dist_combined_test = pmin(null_dist_TC_pval, null_dist_HC_pval)
+  
   return(list("null_dist_TC_prior"=null_dist_TC_prior, 
               "null_dist_TC_stat"=null_dist_TC_stat, 
               "null_dist_combined_test"=null_dist_combined_test))

@@ -15,6 +15,8 @@
 #' alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=p*2)))    # alpha grid in HC statistic
 #' nsim = 1e4    # number of MC iterations
 #' null_dist <- TraitScan.MC(nsim = nsim, p = p, alpha_grid = alpha_grid)
+#' @references
+#' Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." medRxiv (2023): 2023-07.
 #' @rdname MC
 #' @export
 #'
