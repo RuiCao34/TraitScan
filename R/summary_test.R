@@ -52,7 +52,7 @@ TraitScan.summary.level <- function(beta_hat, se_hat, null_cov, alpha_grid, null
   }else{
     w <- whitening::whiteningMatrix(null_cov, method='ZCA-cor')
   }
-  z.decor <- beta_hat/se_hat %*% t(w)
+  z.decor <- as.vector(beta_hat/se_hat %*% t(w))
   pval.de <- (1-pnorm(abs(z.decor)))*2
 
   interest.data <- list("summary" = cbind(z.decor, z.decor, z.decor))
