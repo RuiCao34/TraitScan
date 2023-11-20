@@ -24,7 +24,7 @@ A list with the null distributions of TC priority function, TC statistic, and co
 Monte Carlo Simulation for the null distributions of TC and combined tests
 }
 \note{
-Use this function to simulate the null distributions before run tests \code{TraitScan.summary.level} or \code{TraitScan.individual.level}
+Use this function to simulate the null distributions before run tests \code{TraitScan.main} or \code{TraitScan.individual.level}
 }
 \examples{
 

@@ -7,7 +7,7 @@
 #' @param alpha_grid numeric vector less than 1: the alpha grid for p value thresholds. Default as a geometric sequence from the Bonferroni-significant threshold to 0.05.
 #'
 #' @return A list with the null distributions of TC priority function, TC statistic, and combimed test statistic
-#' @note Use this function to simulate the null distributions before run tests \code{TraitScan.summary.level} or \code{TraitScan.individual.level}
+#' @note Use this function to simulate the null distributions before run tests \code{TraitScan.main} or \code{TraitScan.individual.level}
 #' @author Rui Cao, Tianzhong Yang
 #' @examples
 #'
