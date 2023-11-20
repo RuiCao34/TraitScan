@@ -3,10 +3,10 @@
 #' Run HC and TC tests on summary-level GWAS data and combine tests by minp strategy.
 #'
 #' @param beta_hat a numeric vector, estimated regression coefficients of traits.
-#' @param se_hat a numeric vector, estimated standard errors of beta_hat.
+#' @param se_hat a numeric vector, estimated standard errors of beta_hat. When only z scores are available, it is also acceptable to input z scores into \code{beta_hat} and \code{rep(1,length(beta_hat))} into \code{se_hat}.
 #' @param null_cov a \code{p} by \code{p} positive definite matrix, the covariance matrix of z scores under the null. Can be estimated from null SNPs or LD score regression.
 #' @param alpha_grid the alpha grid for p value thresholds. Should be the same as \code{alpha_grid} when calling \code{TraitScan.MC}
-#' @param null_dist the output of function \code{TraitScan.MC}.
+#' @param null_dist the output of function \code{TraitScan.MC}. Note the null distribution only depends on \code{alpha_grid} and \code{p}. Also downloadable from https://drive.google.com/drive/folders/1qZsJLrrvpMERxvqeCByDpNhYI7PccbUw?usp=sharing. All downloadable null distributions were simulated under 1e4 iterations, and the alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=200))).
 #' @param tol When \code{null_cov} is rank-deficient, it is recommended that the eigenvalues smaller than \code{tol} are filtered out. Additional sensitivity analysis may also be carried on \code{null_cov} to ensure the output is replicable.
 #'
 #' @return A list with the selected subset of traits
@@ -21,7 +21,7 @@
 #'
 #' set.seed(1)
 #' p = 10    # number of traits
-#' alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=p*2)))    # alpha grid in HC statistic
+#' alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=200)))    # alpha grid in HC statistic
 #' nsim = 1e4    # number of MC iterations
 #' null_dist <- TraitScan.MC(nsim = nsim, p = p, alpha_grid = alpha_grid)
 #'
@@ -30,14 +30,14 @@
 #' null_cov = matrix(0.2, nrow = p, ncol = p)
 #' diag(null_cov) = 1
 #'
-#' example <- TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
+#' example <- TraitScan.main(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
 #' @references
 #' Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." medRxiv (2023): 2023-07.
 #' @rdname summary_test
 #' @export
 #'
 
-TraitScan.summary.level <- function(beta_hat, se_hat, null_cov, alpha_grid, null_dist, tol = 1e-2){
+TraitScan.main <- function(beta_hat, se_hat, null_cov, alpha_grid, null_dist, tol = 1e-2){
 
   rank_null_cov = Matrix::rankMatrix(null_cov)
   if(rank_null_cov < nrow(null_cov)){
