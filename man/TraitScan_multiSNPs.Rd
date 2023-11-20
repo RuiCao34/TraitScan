@@ -41,12 +41,12 @@ set.seed(1)
 p = 10    # number of traits
 rho = 0.2
 weight = 1:10/10
-N = 100
+N = 1000
 sigma = matrix(rho,nrow=p,ncol=p)
 diag(sigma) = 1
 X = MASS::mvrnorm(N,rep(0,p),sigma)
 Y = rnorm(N)
-beta_hat = se =rep(0,p)
+beta_hat = se = rep(0,p)
 X_s = 0
 for(i in 1:p){
   temp = summary(lm(Y~X[,i]))
@@ -56,7 +56,6 @@ for(i in 1:p){
 }
 model = lm(Y~X_s)
 summary(model)$coefficients
-sum(model$residuals^2)/(N-q)
 TraitScan.multiSNPs(weight,beta_hat,se,ref_panel=X,N,cont = T)
 
 }

@@ -11,7 +11,7 @@ TraitScan.main(beta_hat, se_hat, null_cov, alpha_grid, null_dist, tol = 0.01)
 
 \item{se_hat}{a numeric vector, estimated standard errors of beta_hat. When only z scores are available, it is also acceptable to input z scores into \code{beta_hat} and \code{rep(1,length(beta_hat))} into \code{se_hat}.}
 
-\item{null_cov}{a \code{p} by \code{p} positive definite matrix, the covariance matrix of z scores under the null. Can be estimated from null SNPs or LD score regression.}
+\item{null_cov}{a \code{p} by \code{p} positive definite matrix, the covariance matrix of z scores under the null.  For individual-level GWAS data, \code{null_cov} cam be estimated from the linear regression residuals. For summary-level GWAS data, \code{null_cov} can be estimated from null SNPs or LD score regression.}
 
 \item{alpha_grid}{the alpha grid for p value thresholds. Should be the same as \code{alpha_grid} when calling \code{TraitScan.MC}}
 
@@ -44,7 +44,7 @@ se_hat = rep(0.1, p)
 null_cov = matrix(0.2, nrow = p, ncol = p)
 diag(null_cov) = 1
 
-example <- TraitScan.summary.level(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
+example <- TraitScan.main(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
 }
 \references{
 Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." medRxiv (2023): 2023-07.
