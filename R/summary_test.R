@@ -5,8 +5,8 @@
 #' @param beta_hat a numeric vector, estimated regression coefficients of traits.
 #' @param se_hat a numeric vector, estimated standard errors of beta_hat. When only z scores are available, it is also acceptable to input z scores into \code{beta_hat} and \code{rep(1,length(beta_hat))} into \code{se_hat}.
 #' @param null_cov a \code{p} by \code{p} positive definite matrix, the covariance matrix of z scores under the null.  For individual-level GWAS data, \code{null_cov} cam be estimated from the linear regression residuals. For summary-level GWAS data, \code{null_cov} can be estimated from null SNPs or LD score regression.
-#' @param alpha_grid the alpha grid for p value thresholds. Should be the same as \code{alpha_grid} when calling \code{TraitScan.MC}
-#' @param null_dist the output of function \code{TraitScan.MC}. Note the null distribution only depends on \code{alpha_grid} and \code{p}. Also downloadable from https://drive.google.com/drive/folders/1qZsJLrrvpMERxvqeCByDpNhYI7PccbUw?usp=sharing. All downloadable null distributions were simulated under 1e4 iterations, and the alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=200))).
+#' @param alpha_grid the alpha grid for p value thresholds. Should be the same as \code{alpha_grid} when calling \code{TraitScan.MC}. When using the pre-computed null distributions, please set \code{alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=200)))}, where \code{p = length(beta_hat)} is the number of traits.
+#' @param null_dist the output of function \code{TraitScan.MC}. Note the null distribution only depends on \code{alpha_grid} and \code{p}. Pre-computed null distributions downloadable from \url{https://drive.google.com/drive/folders/1qZsJLrrvpMERxvqeCByDpNhYI7PccbUw?usp=sharing}. All downloadable null distributions were simulated under 1e4 iterations, and \code{alpha_grid = sort(exp(seq(log(0.05), log(0.05/p), length.out=200)))}.
 #' @param tol When \code{null_cov} is rank-deficient, it is recommended that the eigenvalues smaller than \code{tol} are filtered out. Additional sensitivity analysis may also be carried on \code{null_cov} to ensure the output is replicable.
 #'
 #' @return A list with the selected subset of traits
@@ -32,7 +32,7 @@
 #'
 #' example <- TraitScan.main(beta_hat, se_hat, null_cov, alpha_grid, null_dist)
 #' @references
-#' Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." medRxiv (2023): 2023-07.
+#' Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." Bioinformatics (2024): btad777.
 #' @rdname summary_test
 #' @export
 #'

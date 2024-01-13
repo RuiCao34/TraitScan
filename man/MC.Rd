@@ -34,7 +34,7 @@ nsim = 1e4    # number of MC iterations
 null_dist <- TraitScan.MC(nsim = nsim, p = p, alpha_grid = alpha_grid)
 }
 \references{
-Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." medRxiv (2023): 2023-07.
+Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." Bioinformatics (2024): btad777.
 }
 \author{
 Rui Cao, Tianzhong Yang

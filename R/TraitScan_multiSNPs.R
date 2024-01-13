@@ -36,7 +36,7 @@
 #' TraitScan.multiSNPs(weight,beta_hat,se,ref_panel=X,N,cont = T)
 #'
 #' @references
-#' Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." medRxiv (2023): 2023-07.
+#' Cao, Rui, et al. "Subset scanning for multi-trait analysis using GWAS summary statistics." Bioinformatics (2024): btad777.
 #' Pattee, Jack, and Wei Pan. "Penalized regression and model selection methods for polygenic scores on summary statistics." PLoS computational biology 16.10 (2020): e1008271.
 #' @rdname TraitScan_multiSNPs
 #' @export
